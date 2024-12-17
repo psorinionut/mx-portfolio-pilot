@@ -1,0 +1,192 @@
+{
+  "buildInfo": {
+      "rustc": {
+          "version": "1.81.0-nightly",
+          "commitHash": "6292b2af620dbd771ebb687c3a93c69ba8f97268",
+          "commitDate": "2024-07-02",
+          "channel": "Nightly",
+          "short": "rustc 1.81.0-nightly (6292b2af6 2024-07-02)"
+      },
+      "contractCrate": {
+          "name": "smart-account-deployer",
+          "version": "0.0.0"
+      },
+      "framework": {
+          "name": "multiversx-sc",
+          "version": "0.53.0"
+      }
+  },
+  "name": "SmartAccountDeployer",
+  "constructor": {
+      "inputs": [
+          {
+              "name": "smart_account_open_fee",
+              "type": "BigUint"
+          },
+          {
+              "name": "admin_address",
+              "type": "Address"
+          },
+          {
+              "name": "smart_account_template_address",
+              "type": "Address"
+          }
+      ],
+      "outputs": []
+  },
+  "upgradeConstructor": {
+      "inputs": [],
+      "outputs": []
+  },
+  "endpoints": [
+      {
+          "name": "deploySmartAccount",
+          "mutability": "mutable",
+          "payableInTokens": [
+              "EGLD"
+          ],
+          "inputs": [],
+          "outputs": [
+              {
+                  "type": "Address"
+              }
+          ]
+      },
+      {
+          "name": "initializeSmartAccount",
+          "mutability": "mutable",
+          "payableInTokens": [
+              "EGLD"
+          ],
+          "inputs": [
+              {
+                  "name": "risk_tolerance",
+                  "type": "u64"
+              }
+          ],
+          "outputs": []
+      },
+      {
+          "name": "setAdminAddress",
+          "onlyOwner": true,
+          "mutability": "mutable",
+          "inputs": [
+              {
+                  "name": "admin_address",
+                  "type": "Address"
+              }
+          ],
+          "outputs": []
+      },
+      {
+          "name": "getUserSmartAccount",
+          "mutability": "readonly",
+          "inputs": [
+              {
+                  "name": "user",
+                  "type": "Address"
+              }
+          ],
+          "outputs": [
+              {
+                  "type": "Address"
+              }
+          ]
+      },
+      {
+          "name": "getAdminAddress",
+          "mutability": "readonly",
+          "inputs": [],
+          "outputs": [
+              {
+                  "type": "Address"
+              }
+          ]
+      },
+      {
+          "name": "getSmartAccountOpenFee",
+          "mutability": "readonly",
+          "inputs": [],
+          "outputs": [
+              {
+                  "type": "BigUint"
+              }
+          ]
+      },
+      {
+          "name": "getSmartAccountTemplateAddress",
+          "mutability": "readonly",
+          "inputs": [],
+          "outputs": [
+              {
+                  "type": "Address"
+              }
+          ]
+      },
+      {
+          "name": "getStrategies",
+          "mutability": "readonly",
+          "inputs": [
+              {
+                  "name": "epoch",
+                  "type": "u64"
+              },
+              {
+                  "name": "risk_tolerance",
+                  "type": "u64"
+              }
+          ],
+          "outputs": [
+              {
+                  "type": "List<Strategy>"
+              }
+          ]
+      }
+  ],
+  "esdtAttributes": [],
+  "hasCallback": false,
+  "types": {
+      "PositionType": {
+          "type": "enum",
+          "variants": [
+              {
+                  "name": "ESDT",
+                  "discriminant": 0
+              },
+              {
+                  "name": "Staking",
+                  "discriminant": 1
+              },
+              {
+                  "name": "LP",
+                  "discriminant": 2
+              },
+              {
+                  "name": "Farm",
+                  "discriminant": 3
+              }
+          ]
+      },
+      "Strategy": {
+          "type": "struct",
+          "fields": [
+              {
+                  "name": "percentage",
+                  "type": "u64"
+              },
+              {
+                  "name": "position_type",
+                  "type": "PositionType"
+              },
+              {
+                  "name": "contract_address",
+                  "type": "Address"
+              },
+              {
+                  "name": "output_token_id",
+                  "type": "TokenIdentifier"
+              }
+          ]
+      }
+  }
+}

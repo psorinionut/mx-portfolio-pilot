@@ -1,0 +1,46 @@
+apps:
+  api:
+    port: integer
+    privatePort: integer
+    useCachingInterceptor: boolean
+  cacheWarmer:
+    port: integer
+  queueWorker:
+    port: integer
+  transactionsProcessor:
+    port: integer
+    maxLookBehind: integer
+libs:
+  common:
+    network: string
+    urls:
+      api: string
+      dexApi: string
+    database:
+      host: string
+      port: integer
+      username:
+        type: string
+        required: false
+      password:
+        type: string
+        required: false
+      name: string
+      tlsAllowInvalidCertificates: boolean
+    redis:
+      host: string
+      port: integer
+    nativeAuth:
+      maxExpirySeconds: integer
+      acceptedOrigins:
+        type: array
+        items: string
+      impersonateUrl: string
+    security:
+      admins:
+        type: array
+        items: string
+        default: []
+    rateLimiterSecret:
+      type: string
+      required: false

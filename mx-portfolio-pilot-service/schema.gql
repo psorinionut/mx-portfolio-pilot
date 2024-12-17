@@ -1,0 +1,55 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type SmartAccountFactoryModel {
+  address: String!
+}
+
+type EsdtToken {
+  identifier: String!
+  name: String!
+  ticker: String!
+  decimals: Float!
+  svgIcon: String!
+  price: String
+  supply: String
+  circulatingSupply: String
+  type: String
+}
+
+type Query {
+  factory: SmartAccountFactoryModel!
+  userPositions: [SmartAccountPositionsUnion!]!
+}
+
+union SmartAccountPositionsUnion = LpPositionModel | FarmPositionModel | StakingPositionModel | EsdtPositionModel
+
+type LpPositionModel {
+  address: String
+  firstToken: EsdtToken!
+  secondToken: EsdtToken!
+  amount: String!
+  valueUSD: String!
+}
+
+type FarmPositionModel {
+  address: String
+  firstToken: EsdtToken!
+  secondToken: EsdtToken!
+  amount: String!
+  valueUSD: String!
+}
+
+type StakingPositionModel {
+  address: String
+  token: EsdtToken
+  amount: String!
+  valueUSD: String!
+}
+
+type EsdtPositionModel {
+  token: EsdtToken
+  amount: String!
+  valueUSD: String!
+}
