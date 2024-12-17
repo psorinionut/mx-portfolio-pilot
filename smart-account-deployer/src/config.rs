@@ -7,16 +7,18 @@ pub trait ConfigModule {
     #[endpoint(setFarmStakingAddressForToken)]
     fn set_farm_staking_address_for_token(
         &self,
-        token_id: TokenIdentifier,
-        staking_address: ManagedAddress,
+        farm_staking_addresses: MultiValueEncoded<MultiValue2<TokenIdentifier, ManagedAddress>>,
     ) {
-        require!(
-            self.blockchain().is_smart_contract(&staking_address),
-            "Address must be a smart contract"
-        );
+        for farm_staking_address_pair in farm_staking_addresses {
+            let (token_id, staking_address) = farm_staking_address_pair.into_tuple();
+            require!(
+                self.blockchain().is_smart_contract(&staking_address),
+                "Address must be a smart contract"
+            );
 
-        self.farm_staking_address_for_token(&token_id)
-            .set(staking_address);
+            self.farm_staking_address_for_token(&token_id)
+                .set(staking_address);
+        }
     }
 
     #[only_owner]
@@ -48,9 +50,14 @@ pub trait ConfigModule {
     fn smart_account_template_address(&self) -> SingleValueMapper<ManagedAddress>;
 
     // external settings
+    #[view(getFarmStakingAddressForToken)]
     #[storage_mapper("farmStakingAddressForToken")]
     fn farm_staking_address_for_token(
         &self,
         token_id: &TokenIdentifier,
     ) -> SingleValueMapper<ManagedAddress>;
+
+    #[view(getEgldWrapperAddress)]
+    #[storage_mapper("egldWrapperAddress")]
+    fn egld_wrapper_address(&self) -> SingleValueMapper<ManagedAddress>;
 }

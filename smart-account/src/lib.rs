@@ -34,6 +34,7 @@ pub trait SmartAccount:
     egld_wrapper_actions::EgldWrapperActionsModule
     + pair_actions::PairActionsModule
     + farm_actions::FarmActionsModule
+    + farm_staking_actions::FarmStakingActionsModule
     + config::ConfigModule
 {
     #[init]
@@ -55,9 +56,9 @@ pub trait SmartAccount:
     ) {
         let egld_payment = self.call_value().egld_value().clone_value();
         let wrapped_payment = self.call_wrap_egld(egld_payment.clone());
-        let base_token_id = self.base_token_id().get();
+        let wegld_token_id = self.get_wegld_token_id();
         require!(
-            wrapped_payment.token_identifier == base_token_id,
+            wrapped_payment.token_identifier == wegld_token_id,
             "Invalid base token"
         );
 
@@ -67,7 +68,9 @@ pub trait SmartAccount:
         for strategy_step in user_strategy.iter() {
             match strategy_step.position_type {
                 PositionType::ESDT => self.process_esdt_position(&egld_payment, &strategy_step),
-                PositionType::Staking => self.process_staking_position(),
+                PositionType::Staking => {
+                    self.process_staking_position(&egld_payment, &strategy_step)
+                }
                 PositionType::LP => self.process_lp_position(&egld_payment, &strategy_step),
                 PositionType::Farm => self.process_farm_position(&egld_payment, &strategy_step),
             }
@@ -75,25 +78,50 @@ pub trait SmartAccount:
     }
 
     fn process_esdt_position(&self, total_amount: &BigUint, strategy_step: &Strategy<Self::Api>) {
-        let base_token_id = self.base_token_id().get();
+        let wegld_token_id = self.get_wegld_token_id();
         let investment_amount = total_amount * strategy_step.percentage / MAX_PERCENTAGE;
         let output_payment = self.call_pair_swap(
             strategy_step.contract_address.clone(),
-            EsdtTokenPayment::new(base_token_id, 0, investment_amount),
+            EsdtTokenPayment::new(wegld_token_id, 0, investment_amount),
             strategy_step.output_token_id.clone(),
         );
 
         self.save_user_position(output_payment);
     }
 
-    fn process_staking_position(&self) {}
-
-    fn process_lp_position(&self, total_amount: &BigUint, strategy_step: &Strategy<Self::Api>) {
-        let base_token_id = self.base_token_id().get();
+    fn process_staking_position(
+        &self,
+        total_amount: &BigUint,
+        strategy_step: &Strategy<Self::Api>,
+    ) {
+        let wegld_token_id = self.get_wegld_token_id();
         let investment_amount = total_amount * strategy_step.percentage / MAX_PERCENTAGE;
         let swap_output_payment = self.call_pair_swap(
             strategy_step.contract_address.clone(),
-            EsdtTokenPayment::new(base_token_id.clone(), 0, &investment_amount / 2u64),
+            EsdtTokenPayment::new(wegld_token_id, 0, investment_amount),
+            strategy_step.output_token_id.clone(),
+        );
+
+        let farm_staking_address = self
+            .get_farm_staking_address_mapper(&strategy_step.output_token_id)
+            .get();
+
+        let farm_staking_result = self.call_farm_staking_stake(
+            farm_staking_address,
+            ManagedVec::from_single_item(swap_output_payment),
+        );
+
+        let (new_farm_token, _boosted_rewards_payment) = farm_staking_result.into_tuple();
+
+        self.save_user_position(new_farm_token);
+    }
+
+    fn process_lp_position(&self, total_amount: &BigUint, strategy_step: &Strategy<Self::Api>) {
+        let wegld_token_id = self.get_wegld_token_id();
+        let investment_amount = total_amount * strategy_step.percentage / MAX_PERCENTAGE;
+        let swap_output_payment = self.call_pair_swap(
+            strategy_step.contract_address.clone(),
+            EsdtTokenPayment::new(wegld_token_id.clone(), 0, &investment_amount / 2u64),
             strategy_step.output_token_id.clone(),
         );
 
@@ -104,7 +132,7 @@ pub trait SmartAccount:
             .get_second_token_id_mapper(strategy_step.contract_address.clone())
             .get();
 
-        let (first_tokens, second_tokens) = if first_token_id == base_token_id {
+        let (first_tokens, second_tokens) = if first_token_id == wegld_token_id {
             (
                 EsdtTokenPayment::new(first_token_id, 0, investment_amount / 2u64),
                 EsdtTokenPayment::new(second_token_id, 0, swap_output_payment.amount),
@@ -130,7 +158,7 @@ pub trait SmartAccount:
     }
 
     fn process_farm_position(&self, total_amount: &BigUint, strategy_step: &Strategy<Self::Api>) {
-        let base_token_id = self.base_token_id().get();
+        let wegld_token_id = self.get_wegld_token_id();
         let investment_amount = total_amount * strategy_step.percentage / MAX_PERCENTAGE;
 
         let pair_address = self
@@ -139,14 +167,14 @@ pub trait SmartAccount:
 
         let swap_output_payment = self.call_pair_swap(
             pair_address.clone(),
-            EsdtTokenPayment::new(base_token_id.clone(), 0, &investment_amount / 2u64),
+            EsdtTokenPayment::new(wegld_token_id.clone(), 0, &investment_amount / 2u64),
             strategy_step.output_token_id.clone(),
         );
 
         let first_token_id = self.get_first_token_id_mapper(pair_address.clone()).get();
         let second_token_id = self.get_second_token_id_mapper(pair_address.clone()).get();
 
-        let (first_tokens, second_tokens) = if first_token_id == base_token_id {
+        let (first_tokens, second_tokens) = if first_token_id == wegld_token_id {
             (
                 EsdtTokenPayment::new(first_token_id, 0, investment_amount / 2u64),
                 EsdtTokenPayment::new(second_token_id, 0, swap_output_payment.amount),
@@ -198,8 +226,4 @@ pub trait SmartAccount:
     #[view(getUserRiskTolerance)]
     #[storage_mapper("userRiskTolerance")]
     fn user_risk_tolerance(&self) -> SingleValueMapper<u64>;
-
-    #[view(getBaseTokenId)]
-    #[storage_mapper("baseTokenId")]
-    fn base_token_id(&self) -> SingleValueMapper<TokenIdentifier>;
 }

@@ -6,9 +6,9 @@
 
 // Init:                                 1
 // Upgrade:                              1
-// Endpoints:                           11
+// Endpoints:                           14
 // Async Callback (empty):               1
-// Total number of exported functions:  14
+// Total number of exported functions:  17
 
 #![no_std]
 
@@ -21,6 +21,7 @@ multiversx_sc_wasm_adapter::endpoints! {
         init => init
         upgrade => upgrade
         deploySmartAccount => deploy_smart_account
+        upgradeSmartAccount => upgrade_smart_account
         initializeSmartAccount => initialize_smart_account
         setFarmStakingAddressForToken => set_farm_staking_address_for_token
         setAdminAddress => set_admin_address
@@ -28,6 +29,8 @@ multiversx_sc_wasm_adapter::endpoints! {
         getAdminAddress => admin_address
         getSmartAccountOpenFee => smart_account_open_fee
         getSmartAccountTemplateAddress => smart_account_template_address
+        getFarmStakingAddressForToken => farm_staking_address_for_token
+        getEgldWrapperAddress => egld_wrapper_address
         setStrategiesPerEpoch => set_strategies_per_epoch
         getStrategies => strategies
         getLastStrategyEpoch => last_strategy_epoch

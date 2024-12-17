@@ -6,9 +6,9 @@
 
 // Init:                                 1
 // Upgrade:                              1
-// Endpoints:                            5
+// Endpoints:                            4
 // Async Callback (empty):               1
-// Total number of exported functions:   8
+// Total number of exported functions:   7
 
 #![no_std]
 
@@ -24,7 +24,6 @@ multiversx_sc_wasm_adapter::endpoints! {
         getUserStrategy => user_strategy
         getUserPortfolio => user_portfolio
         getUserRiskTolerance => user_risk_tolerance
-        getBaseTokenId => base_token_id
     )
 }
 
