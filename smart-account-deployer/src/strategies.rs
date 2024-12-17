@@ -1,7 +1,10 @@
 multiversx_sc::imports!();
 multiversx_sc::derive_imports!();
 
-use smart_account::{config::{MAX_PERCENTAGE, MAX_RISK_TOLERANCE}, PositionType, Strategy};
+use smart_account::{
+    config::{MAX_PERCENTAGE, MAX_RISK_TOLERANCE},
+    PositionType, Strategy,
+};
 
 use crate::config;
 
@@ -9,7 +12,6 @@ const MAX_STRATEGIES_NO: usize = 5;
 
 #[multiversx_sc::module]
 pub trait StrategiesModule: config::ConfigModule {
-    // TODO - optimize parameter input
     #[endpoint(setStrategiesPerEpoch)]
     fn set_strategies_per_epoch(
         &self,
@@ -39,6 +41,10 @@ pub trait StrategiesModule: config::ConfigModule {
         for strategy in risk_strategies {
             let (percentage, position_type, contract_address, output_token_id) =
                 strategy.into_tuple();
+
+            if percentage == 0 {
+                continue;
+            }
 
             strategies.push(Strategy {
                 percentage,

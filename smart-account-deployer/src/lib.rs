@@ -110,13 +110,14 @@ pub trait SmartAccountDeployer: config::ConfigModule + strategies::StrategiesMod
         );
 
         let payment_amount = self.call_value().egld_value().clone_value();
-
-        // TODO
-        // Check if some strategies are available
         let smart_account_address = smart_account_mapper.get();
 
         let last_strategy_epoch = self.last_strategy_epoch().get();
-        let user_strategy = self.strategies(last_strategy_epoch, risk_tolerance).get();
+        let user_strategies_mapper = self.strategies(last_strategy_epoch, risk_tolerance);
+
+        require!(user_strategies_mapper.is_empty(), "No strategies available");
+
+        let user_strategy = user_strategies_mapper.get();
 
         self.smart_account_proxy(smart_account_address)
             .setup_smart_account(risk_tolerance, user_strategy)
