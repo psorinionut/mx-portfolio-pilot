@@ -115,7 +115,7 @@ pub trait SmartAccountDeployer: config::ConfigModule + strategies::StrategiesMod
         let last_strategy_epoch = self.last_strategy_epoch().get();
         let user_strategies_mapper = self.strategies(last_strategy_epoch, risk_tolerance);
 
-        require!(user_strategies_mapper.is_empty(), "No strategies available");
+        require!(!user_strategies_mapper.is_empty(), "No strategies available");
 
         let user_strategy = user_strategies_mapper.get();
 
