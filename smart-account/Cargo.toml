@@ -1,0 +1,45 @@
+[package]
+name = "smart-account"
+version = "0.0.0"
+publish = false
+edition = "2021"
+authors = ["you"]
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies.multiversx-sc]
+version = "0.53.0"
+
+[dependencies.multiversx-wegld-swap-sc]
+version = "0.53.0"
+
+[dependencies.farm]
+git = "https://github.com/multiversx/mx-exchange-sc"
+rev = "571dc9d"
+
+[dependencies.farm-with-locked-rewards]
+git = "https://github.com/multiversx/mx-exchange-sc"
+rev = "571dc9d"
+
+[dependencies.farm-staking]
+git = "https://github.com/multiversx/mx-exchange-sc"
+rev = "571dc9d"
+
+[dependencies.pair]
+git = "https://github.com/multiversx/mx-exchange-sc"
+rev = "571dc9d"
+
+[dependencies.router]
+git = "https://github.com/multiversx/mx-exchange-sc"
+rev = "571dc9d"
+
+[dependencies.common_structs]
+git = "https://github.com/multiversx/mx-exchange-sc"
+rev = "571dc9d"
+
+[dev-dependencies]
+num-bigint = "0.4"
+
+[dev-dependencies.multiversx-sc-scenario]
+version = "0.53.0"

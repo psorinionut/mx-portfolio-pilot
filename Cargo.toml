@@ -1,0 +1,9 @@
+[workspace]
+resolver = "2"
+
+members = [
+  "smart-account",
+  "smart-account/meta",
+  "smart-account-deployer",
+  "smart-account-deployer/meta",
+]

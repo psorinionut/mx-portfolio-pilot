@@ -6,9 +6,9 @@
 
 // Init:                                 1
 // Upgrade:                              1
-// Endpoints:                            0
+// Endpoints:                            5
 // Async Callback (empty):               1
-// Total number of exported functions:   3
+// Total number of exported functions:   8
 
 #![no_std]
 
@@ -16,10 +16,15 @@ multiversx_sc_wasm_adapter::allocator!();
 multiversx_sc_wasm_adapter::panic_handler!();
 
 multiversx_sc_wasm_adapter::endpoints! {
-    mx_portfolio_pilot_sc
+    smart_account
     (
         init => init
         upgrade => upgrade
+        setupSmartAccount => setup_smart_account
+        getUserStrategy => user_strategy
+        getUserPortfolio => user_portfolio
+        getUserRiskTolerance => user_risk_tolerance
+        getBaseTokenId => base_token_id
     )
 }
 

@@ -1,24 +1,21 @@
 [package]
-name = "mx-portfolio-pilot-sc"
+name = "smart-account-deployer"
 version = "0.0.0"
 publish = false
 edition = "2021"
 authors = ["you"]
 
 [lib]
-path = "src/mx_portfolio_pilot_sc.rs"
+path = "src/lib.rs"
 
 [dependencies.multiversx-sc]
-version = "0.54.6"
+version = "0.53.0"
+
+[dependencies.smart-account]
+path = "../smart-account"
 
 [dev-dependencies]
 num-bigint = "0.4"
 
 [dev-dependencies.multiversx-sc-scenario]
-version = "0.54.6"
-
-[workspace]
-members = [
-    ".",
-    "meta",
-]
+version = "0.53.0"
