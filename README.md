@@ -123,3 +123,37 @@ Strategies are defined per risk tolerance level (1-5) and consist of:
 - Additional position types
 - Optimized gas usage
 - Extended analytics capabilities
+
+
+# Backend Service
+The mx-portfolio-pilot-service handles all interactions with the smart contracts:
+
+## Core Functionalities
+
+- Manages contract deployment and initialization
+- Updates strategies based on AI recommendations
+- Processes user operations and portfolio management
+- Monitors positions and handles rebalancing
+
+The service requires setup for:
+
+- Network configuration (Gateway, Chain)
+- Contract addresses (Deployer, Template)
+- AI service integration
+- Monitoring parameters
+
+## Security Considerations
+
+- Public endpoints have strict validation
+- Admin-only functions for strategy updates
+- Balance checks before operations
+- Safe math operations for calculations
+- Transaction signing using secure key management
+- API authentication and rate limiting
+
+## Future Improvements
+
+- Enhanced rebalancing mechanics
+- Additional position types
+- Optimized gas usage
+- Extended analytics capabilities
