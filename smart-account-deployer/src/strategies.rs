@@ -1,12 +1,11 @@
 multiversx_sc::imports!();
 multiversx_sc::derive_imports!();
 
-use smart_account::{config::MAX_PERCENTAGE, PositionType, Strategy};
+use smart_account::{config::{MAX_PERCENTAGE, MAX_RISK_TOLERANCE}, PositionType, Strategy};
 
 use crate::config;
 
 const MAX_STRATEGIES_NO: usize = 5;
-const MAX_RISK_TOLERANCE: u64 = 5;
 
 #[multiversx_sc::module]
 pub trait StrategiesModule: config::ConfigModule {

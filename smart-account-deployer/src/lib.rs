@@ -30,7 +30,10 @@ pub trait SmartAccountDeployer: config::ConfigModule + strategies::StrategiesMod
     }
 
     #[upgrade]
-    fn upgrade(&self, smart_account_template_address: ManagedAddress) {
+    fn upgrade(&self) {}
+
+    #[endpoint(updateSmartAccountTemplate)]
+    fn update_smart_account_template(&self, smart_account_template_address: ManagedAddress) {
         require!(
             self.blockchain()
                 .is_smart_contract(&smart_account_template_address),

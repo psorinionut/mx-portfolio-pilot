@@ -3,6 +3,7 @@
 multiversx_sc::imports!();
 multiversx_sc::derive_imports!();
 
+use config::MAX_RISK_TOLERANCE;
 use pair_actions::PairAddLiqArgs;
 
 use crate::config::MAX_PERCENTAGE;
@@ -61,6 +62,11 @@ pub trait SmartAccount:
             wrapped_payment.token_identifier == wegld_token_id,
             "Invalid base token"
         );
+        require!(!user_strategy.is_empty(), "No user strategy found");
+        require!(
+            risk_tolerance <= MAX_RISK_TOLERANCE,
+            "No user strategy found"
+        );
 
         self.user_risk_tolerance().set(risk_tolerance);
         self.user_strategy().set(&user_strategy);
@@ -96,6 +102,14 @@ pub trait SmartAccount:
     ) {
         let wegld_token_id = self.get_wegld_token_id();
         let investment_amount = total_amount * strategy_step.percentage / MAX_PERCENTAGE;
+        // require!(
+        //     self.blockchain().get_esdt_balance(
+        //         &self.blockchain().get_sc_address(),
+        //         &wegld_token_id,
+        //         0
+        //     ) > investment_amount,
+        //     "Error in staking process"
+        // );
         let swap_output_payment = self.call_pair_swap(
             strategy_step.contract_address.clone(),
             EsdtTokenPayment::new(wegld_token_id, 0, investment_amount),
@@ -119,9 +133,11 @@ pub trait SmartAccount:
     fn process_lp_position(&self, total_amount: &BigUint, strategy_step: &Strategy<Self::Api>) {
         let wegld_token_id = self.get_wegld_token_id();
         let investment_amount = total_amount * strategy_step.percentage / MAX_PERCENTAGE;
+        let half_investment = &investment_amount / 2u64;
+
         let swap_output_payment = self.call_pair_swap(
             strategy_step.contract_address.clone(),
-            EsdtTokenPayment::new(wegld_token_id.clone(), 0, &investment_amount / 2u64),
+            EsdtTokenPayment::new(wegld_token_id.clone(), 0, half_investment.clone()),
             strategy_step.output_token_id.clone(),
         );
 
@@ -134,13 +150,13 @@ pub trait SmartAccount:
 
         let (first_tokens, second_tokens) = if first_token_id == wegld_token_id {
             (
-                EsdtTokenPayment::new(first_token_id, 0, investment_amount / 2u64),
-                EsdtTokenPayment::new(second_token_id, 0, swap_output_payment.amount),
+                EsdtTokenPayment::new(first_token_id, 0, half_investment),
+                swap_output_payment, // Use the full swap output
             )
         } else {
             (
-                EsdtTokenPayment::new(second_token_id, 0, swap_output_payment.amount),
-                EsdtTokenPayment::new(first_token_id, 0, investment_amount / 2u64),
+                swap_output_payment, // Use the full swap output
+                EsdtTokenPayment::new(second_token_id, 0, half_investment),
             )
         };
 
@@ -160,6 +176,7 @@ pub trait SmartAccount:
     fn process_farm_position(&self, total_amount: &BigUint, strategy_step: &Strategy<Self::Api>) {
         let wegld_token_id = self.get_wegld_token_id();
         let investment_amount = total_amount * strategy_step.percentage / MAX_PERCENTAGE;
+        let half_investment = &investment_amount / 2u64;
 
         let pair_address = self
             .get_farm_pair_contract_address_mapper(strategy_step.contract_address.clone())
@@ -167,7 +184,7 @@ pub trait SmartAccount:
 
         let swap_output_payment = self.call_pair_swap(
             pair_address.clone(),
-            EsdtTokenPayment::new(wegld_token_id.clone(), 0, &investment_amount / 2u64),
+            EsdtTokenPayment::new(wegld_token_id.clone(), 0, half_investment.clone()),
             strategy_step.output_token_id.clone(),
         );
 
@@ -176,13 +193,13 @@ pub trait SmartAccount:
 
         let (first_tokens, second_tokens) = if first_token_id == wegld_token_id {
             (
-                EsdtTokenPayment::new(first_token_id, 0, investment_amount / 2u64),
-                EsdtTokenPayment::new(second_token_id, 0, swap_output_payment.amount),
+                EsdtTokenPayment::new(first_token_id, 0, half_investment),
+                swap_output_payment, // Use the full swap output
             )
         } else {
             (
-                EsdtTokenPayment::new(second_token_id, 0, swap_output_payment.amount),
-                EsdtTokenPayment::new(first_token_id, 0, investment_amount / 2u64),
+                swap_output_payment, // Use the full swap output
+                EsdtTokenPayment::new(second_token_id, 0, half_investment),
             )
         };
 

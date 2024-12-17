@@ -6,9 +6,9 @@
 
 // Init:                                 1
 // Upgrade:                              1
-// Endpoints:                           14
+// Endpoints:                           15
 // Async Callback (empty):               1
-// Total number of exported functions:  17
+// Total number of exported functions:  18
 
 #![no_std]
 
@@ -20,6 +20,7 @@ multiversx_sc_wasm_adapter::endpoints! {
     (
         init => init
         upgrade => upgrade
+        updateSmartAccountTemplate => update_smart_account_template
         deploySmartAccount => deploy_smart_account
         upgradeSmartAccount => upgrade_smart_account
         initializeSmartAccount => initialize_smart_account
